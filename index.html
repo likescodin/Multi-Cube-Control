@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>
+        Multi Cube Control
+    </title>
+    <meta name='viewport' content='width=device-width, initial-scale=1 maximum-scale=1 user-scalable=no'>
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            overflow: hidden;
+            padding: 0%;
+            margin: 0%;
+        }
+    </style>
+</head>
+
+<body ontouchstart='toggle(event, true)' ontouchend='toggle(event, false)' ontouchcancel='toggle(event, false)'
+    ontouchmove='emove(event)' onresize='resize()' onmouseout='toggle(event, false)' onmousemove='emove(event)'
+    onmouseup='toggle(event, false)' onmousedown='toggle(event, true)' onload='init()' ondragenter='dragenter(event)' ondragover='dragenter(event)' ondragleave='dragleave(event)' ondrop='drop(event)'>
+    <script src='three.min.js'>
+    </script>
+    <script src='script.js'>
+    </script>
+    <script id='vertexShader' type='x-shader/x-vertex'>
+        varying vec3 vUv;
+        varying vec4 realpos;
+            void main() {
+                vUv = position;
+                realpos = modelMatrix * vec4(position.x, position.y, position.z, 1.0);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position.x, position.y, position.z, 1.0);
+            }
+    </script>
+    <script id='fragmentShader' type='x-shader/x-fragment'>
+            varying vec3 vUv;
+            varying vec4 realpos;
+            uniform vec3 normalcolor;
+            uniform vec3 heightcolor;
+            void main() {
+                float realposy = abs(realpos.y - 4.0) - (realpos.y - 4.0);
+                vec3 color = mix(heightcolor, normalcolor, realposy);
+                float d = (1.0 - distance(vUv, vec3(0.0, 0.0, 0.0))) * 2.0;
+                gl_FragColor = vec4(d * color.x, d * color.y, d * color.z, 1.0);
+            }
+    </script>
+</body>
+
+</html>
